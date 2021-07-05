@@ -116,7 +116,7 @@ class PostController {
         }
     }
 
-    // STORE
+    // UPDATE
     async update(req, res) {
         try {
             const id = req.params.postId
