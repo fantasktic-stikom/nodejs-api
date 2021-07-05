@@ -102,12 +102,56 @@ class PostController {
             });
 
             if(post) {
-                res.status(201).json({
+                return res.status(201).json({
                     'success': true,
                     'message': 'Post created successfully',
                     'data': post
                 });
             }
+        } catch (error) {
+            return res.status(400).json({
+                'success': false,
+                'message': error.message
+            });
+        }
+    }
+
+    // STORE
+    async update(req, res) {
+        try {
+            const id = req.params.postId
+            const request = req.body
+            const validate = Joi.validate(request, validation.postSchema, { abortEarly: false })
+            if (validate.error) {
+                return res.status(422).json({
+                    'messages': 'Validate error',
+                    'error': validate.error.details
+                })
+            }    
+
+            const {
+                title,
+                content,
+                category_id
+            } = req.body;
+
+            const post = await models.posts.update({
+                title,
+                content,
+                category_id
+            }, {
+                where : {
+                    id: id
+                }
+            });
+
+            if(post) {
+                return res.status(201).json({
+                    'success': true,
+                    'message': 'Post updated successfully'
+                });
+            }
+
         } catch (error) {
             return res.status(400).json({
                 'success': false,
