@@ -64,7 +64,7 @@ class PostController {
                 });
             } else {
                 return res.status(404).json({
-                    'success': true,
+                    'success': false,
                     'messages': 'Data not found',
                     'data': {} 
                 });
@@ -146,9 +146,49 @@ class PostController {
             });
 
             if(post) {
-                return res.status(201).json({
+                return res.status(200).json({
                     'success': true,
                     'message': 'Post updated successfully'
+                });
+            }
+
+        } catch (error) {
+            return res.status(400).json({
+                'success': false,
+                'message': error.message
+            });
+        }
+    }
+
+    // DELETE
+    async delete(req, res) {
+        try {
+            const id = req.params.postId
+
+            const check = await models.posts.findOne({
+                where: {
+                    id: id
+                }
+            })
+
+            if(!check) {
+                return res.status(404).json({
+                    'success': false,
+                    'messages': 'Data not found'
+                });
+            }
+
+
+            const post = models.posts.destroy({
+                where : {
+                    id: id
+                }
+            });
+
+            if(post) {
+                return res.status(200).json({
+                    'success': true,
+                    'message': 'Post deleted successfully'
                 });
             }
 
