@@ -3,7 +3,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const app = express()
-
+// parse requests of content-type - application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }));
 // include router
 const mainRoute = require('./router')
 app.use(mainRoute)

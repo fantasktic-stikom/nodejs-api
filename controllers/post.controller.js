@@ -1,5 +1,6 @@
-const categories = require('../models/categories');
 const models = require('../models/index')
+const validation = require('../utils/validation.js')
+const Joi = require('joi')
 
 class PostController {
     constructor(){}
@@ -26,14 +27,14 @@ class PostController {
             } else {
                 return res.json({
                     'success': true,
-                    'messages': 'Data is empty',
+                    'message': 'Data is empty',
                     'data': {} 
                 });
             }
        } catch (error) {
             return res.status(400).json({
                 'success': false,
-                'messages': error.message
+                'message': error.message
             });
        }
     }
@@ -71,9 +72,48 @@ class PostController {
        } catch (error) {
             return res.status(400).json({
                 'success': false,
-                'messages': error.message
+                'message': error.message
             });
        }
+    }
+
+    // STORE
+    async store(req, res) {
+        try {
+            const request = req.body
+            const validate = Joi.validate(request, validation.postSchema, { abortEarly: false })
+            if (validate.error) {
+                return res.status(422).json({
+                    'messages': 'Validate error',
+                    'error': validate.error.details
+                })
+            }    
+
+            const {
+                title,
+                content,
+                category_id
+            } = req.body;
+
+            const post = await models.posts.create({
+                title,
+                content,
+                category_id
+            });
+
+            if(post) {
+                res.status(201).json({
+                    'success': true,
+                    'message': 'Post created successfully',
+                    'data': post
+                });
+            }
+        } catch (error) {
+            return res.status(400).json({
+                'success': false,
+                'message': error.message
+            });
+        }
     }
 }
 
